@@ -68,6 +68,6 @@ for ax in axes:
 
 ax.legend()
 
-fig.savefig('hw1bp6.pdf')
+fig.savefig('hw1bp6-flows.pdf')
 
 plt.show()
