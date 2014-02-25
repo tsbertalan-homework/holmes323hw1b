@@ -112,15 +112,18 @@ def integrate(dXdt, h, t0, tf, X0, method='euler', newtontol=1e-6):
         #  automatically get smaller timesteps.
         from scipy.integrate import ode
         solver = ode(f)
-        T = [t0]
-        X = [X0]
-        solver.set_initial_value(X0, t0)
         if method.lower() in ode45:
-            solver.set_integrator('dopri5')
+            solver.set_integrator('dopri5', nsteps=1)
+            from warnings import filterwarnings
+            filterwarnings("ignore", category=UserWarning)
         if method.lower() in ode15s:
             solver.set_integrator('vode', method='bdf', order=15)
-        while solver.successful() and solver.t < tf:
-            solver.integrate(solver.t + h, step=True)  # We should get *at least*
+        solver.set_initial_value(X0, t0)
+        solver._integrator.iwork[2] = -1
+        T = [t0]
+        X = [X0]
+        while solver.t < tf:
+            solver.integrate(tf, step=True)  # We should get *at least*
             T.append(solver.t)  #  as many steps as the other methods; perhaps
             X.append(solver.y.reshape((N,)))  #  more.
         T = np.array(T)

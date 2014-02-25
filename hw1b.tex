@@ -21,7 +21,8 @@
 \begin{figure}[ht]
  \includegraphics[width=\columnwidth]{code/hw1b-5-adaptive.pdf}
  \caption{Adaptive timestepping vs widely-stepped RK4. Since Matlab's 
-\texttt{ODE45} and SciPy's equivalent \texttt{dopri5} actually don't do 
+\texttt{ODE45} and \texttt{ODE15s} algorithms, and SciPy's equivalent
+\texttt{dopri5} and \texttt{vode/bdf} actually don't do 
 vanilla RK4, but a more sophisticated adaptive method, I thought it would be 
 interesting to show this graphically. The same timestep is given to both 
 solvers, but the ode15s-analog adaptively adds extra timesteps where the 

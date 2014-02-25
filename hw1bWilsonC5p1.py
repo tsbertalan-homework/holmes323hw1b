@@ -30,8 +30,8 @@ adapFig = plt.figure(figsize=(8.5,3.5))
 adapAx = adapFig.add_subplot(1, 1, 1)
 h = .025
 for method, label, style in zip(
-                                ('ode15s', 'rungekutta'),
-                                ('ode15s', 'RK4'),
+                                ('ode45', 'rungekutta'),
+                                ('ode45 (dopri5)', 'RK4'),
                                 ('r.', 'g')): 
     X, T = integrate(dXdt, h, t0=0.0, tf=tf, X0=(0.0,), method=method)
     adapAx.plot(T, X[0,:], style, label='%s: $h=%.0f$ [ms]' % (label, h*1e3))
@@ -79,8 +79,7 @@ errFig = plt.figure(figsize=(8.5, 3.5))
 errAx = errFig.add_subplot(1, 1, 1)
 trueSoln, trueTimes = integrate(dXdt, .00001, 0.0, tf, (0.0,), method='rungekutta')
 errs = []
-hsErr = np.log(np.logspace(.001, .03, 20))
-# hsErr = np.linspace(.001, .03, 20)
+hsErr = 3*np.logspace(-4, -2, 20)
 for h in hsErr:
     logging.info('error plotting: h=%f' % h)
     X, T = integrate(dXdt, h, 0.0, tf, (0.0,), method='rungekutta')
@@ -160,4 +159,4 @@ errFig.savefig('hw1b-5-error.pdf')
 # The analytical solution for P=1 is
 #  R(t) = \frac{50}{13}(1 - e^{-50t})
 
-# plt.show()
+plt.show()
