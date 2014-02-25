@@ -123,7 +123,7 @@ def integrate(dXdt, h, t0, tf, X0, method='euler', newtontol=1e-6):
         T = [t0]
         X = [X0]
         while solver.t < tf:
-            solver.integrate(tf, step=True)  # We should get *at least*
+            solver.integrate(solver.t + h, step=True)  # We should get *at least*
             T.append(solver.t)  #  as many steps as the other methods; perhaps
             X.append(solver.y.reshape((N,)))  #  more.
         T = np.array(T)

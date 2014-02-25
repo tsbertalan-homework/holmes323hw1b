@@ -159,4 +159,5 @@ errFig.savefig('hw1b-5-error.pdf')
 # The analytical solution for P=1 is
 #  R(t) = \frac{50}{13}(1 - e^{-50t})
 
-plt.show()
+# plt.show()
+# from os import system; system('/usr/bin/notify-send done')
