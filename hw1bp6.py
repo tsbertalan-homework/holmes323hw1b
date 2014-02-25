@@ -6,12 +6,7 @@ Created on Feb 24, 2014, 3:58:19 PM
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Integrators import integrate
-
-import logging
-logging.basicConfig(format='%(levelname)s: %(message)s',
-                    level=logging.INFO, # Turn on/off debug by switching INFO/ERROR.
-                    name='log')
+from Integrators import integrate, logging
 
 def FitzhughNagumo(Iapp):
     '''This closure gives the RHS function for a particular applied current value.'''

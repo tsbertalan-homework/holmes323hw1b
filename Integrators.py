@@ -5,6 +5,10 @@ Created on Feb 24, 2014, 1:04:36 PM
 '''
 
 import numpy as np  # Gives us matrices and linear algebra.
+import logging
+logging.basicConfig(format='%(levelname)s: %(message)s',
+                    level=logging.INFO, # Turn on/off debug by switching INFO/ERROR.
+                    name='log')
 
 
 def integrate(dXdt, h, t0, tf, X0, method='euler', newtontol=1e-6):

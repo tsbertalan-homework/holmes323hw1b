@@ -9,7 +9,7 @@ With additions from Holmes 323HW14.1.pdf, problem 5.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Integrators import integrate
+from Integrators import integrate, logging
 
 
 def dXdt(X, t):
@@ -48,11 +48,10 @@ for h in hs:
     X, T = integrate(dXdt, h, 0.0, tf, (0.0,), method='rungekutta')
     tstepAx.plot(T, X[0,:], label='%.0f' % (h*1e3))
 
-# Let's explicitly look at the error of the final point.
-def LinInterp(T, X):
+# Let's explicitly look at the norm of the error
+def linInterp(T, X, Treq):
     '''
-    Produce a function that will linearly interpolate X(T) to give X values
-    for requested T values. Both T and X should be lists, tuples, or 1D arrays.
+    Produce linear interpolation of X(T) at the requested T values
     '''
     def findClosest(vec, val):
         """Return the index where vec[index] is closest to val.
@@ -61,48 +60,55 @@ def LinInterp(T, X):
         """
         distances = np.abs([val - x for x in vec])
         return distances.tolist().index(np.min(distances))
-    def linInterp(t):
-        '''A very slow interpolator.'''
-        if t in T.tolist():
-            return X[T.tolist().index(t)]
-        else:
-            i = findClosest(T, t)
-            if i == 0:
-                j = 1
-            elif i == T.size - 1:
-                j = i - 1 
-            else:
-                if abs(T[i+1]-t) < abs(T[i-1]-t):
-                    j = i + 1
-                else:
-                    j = i - 1
-        dxdt = (X[j] - X[i]) / (T[j] - T[i])
-        return dxdt * (t - T[i]) + X[i]
-    return linInterp
-        
+    assert T[0] == Treq[0], 'I am lazy.'
     
+    j = 0
+    built = np.empty(Treq.shape)
+    for i in range(len(T) - 1):
+        t1 = T[i]
+        t2 = T[i + 1]
+        
+        while j < len(Treq) and t1 <= Treq[j] < t2:
+            dxdt = (X[i+1] - X[i]) / (T[i+1] - T[i])
+            built[j] = dxdt * (Treq[j] - T[i]) + X[i]
+            j += 1
+        
+    return built
+        
 errFig = plt.figure(figsize=(8.5, 3.5))
 errAx = errFig.add_subplot(1, 1, 1)
 trueSoln, trueTimes = integrate(dXdt, .00001, 0.0, tf, (0.0,), method='rungekutta')
 errs = []
-hsErr = np.log(np.logspace(.001, .1, 10)) / np.log(10)
+hsErr = np.log(np.logspace(.001, .03, 20))
+# hsErr = np.linspace(.001, .03, 20)
 for h in hsErr:
-    print h
+    logging.info('error plotting: h=%f' % h)
     X, T = integrate(dXdt, h, 0.0, tf, (0.0,), method='rungekutta')
-    print "making interpolator"
-    linInterp = LinInterp(T, X.ravel())
-    print "finding errors"
-    errs.append(abs(
-                    np.linalg.norm(trueSoln[0, :] - 
-                                   np.array([linInterp(t) for t in trueTimes]))
-                    )
-                )
+    interpolated = linInterp(T, X.ravel(), trueTimes)
+    errs.append(np.linalg.norm(trueSoln[0, :] - interpolated))
 errAx.scatter(hsErr, errs)
-errAx.set_xlabel('$log_{10}(h)$')
-errAx.set_ylabel('$log_{10}(|$(true - RK4$|)$')
-errAx.set_ylim(errAx.get_xlim())
+errAx.set_xlabel('$x=log_{10}(h)$')
+errAx.set_ylabel('$y=log_{10}(|$(true - RK4$|)$')
 errAx.set_xscale('log')
 errAx.set_yscale('log')
+# fit a line:
+from scipy.optimize import minimize
+def minimizeThis(MB):
+    m = MB[0]
+    b = MB[1]
+    #l10(err)0 = m * l10(h) + b
+    return np.linalg.norm(m * np.log(hsErr) + b - np.log(np.asarray(errs)))
+MB = minimize(minimizeThis, np.array([4,.001])).x
+xlim = errAx.get_xlim()
+ylim = errAx.get_ylim()
+m, b = tuple(MB)
+errAx.plot(hsErr, np.exp(b)*hsErr**m)
+logging.info('m=%f, b=%f' % (m, b))
+errAx.set_title(
+                r'$y\approx%.2fx+%.2f$' % (m, b) + '\n' +
+                r'$r\approx e^{%.2f}h^{%.2f}$' % (b, m)
+                )
+
 showTime = 0.20  # We're not going to plot the whole thing.
 
 # Now, forward/backward Euler with the same timesteps:
@@ -143,6 +149,7 @@ ax2backward.legend(loc='right')
 fbFig.subplots_adjust(bottom=.14, top=.9, left=.1, right=.99, wspace=.05)
 tstepFig.subplots_adjust(bottom=.18, top=.99, left=.08, right=.99)
 adapFig.subplots_adjust(bottom=.18, top=.99, left=.08, right=.99)
+errFig.subplots_adjust(top=.9)
 
 # Save them.
 tstepFig.savefig('hw1b-wils5_1.pdf')
@@ -153,4 +160,4 @@ errFig.savefig('hw1b-5-error.pdf')
 # The analytical solution for P=1 is
 #  R(t) = \frac{50}{13}(1 - e^{-50t})
 
-plt.show()
+# plt.show()
