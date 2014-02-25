@@ -1,1 +1,104 @@
-../hw1b.tex
+% \documentclass[letterpaper,10pt]{article}
+\documentclass{tufte-handout}
+\setcounter{secnumdepth}{2}
+\usepackage[utf8]{inputenc}
+% \usepackage[margin=1.5cm]{geometry}32
+
+\usepackage{graphicx,homework,minted}
+
+
+\title{MAT351 - HW1 - Part 2}
+\author{Tom Bertalan}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+\section{Problem 5: Wilson Exercise 5.1, p70, et al.}
+\begin{figure}[ht]
+ \includegraphics[width=\columnwidth]{code/hw1b-5-adaptive.pdf}
+ \caption{Adaptive timestepping vs widely-stepped RK4. Since Matlab's 
+\texttt{ODE45} and SciPy's equivalent \texttt{dopri5} actually don't do 
+vanilla RK4, but a more sophisticated adaptive method, I thought it would be 
+interesting to show this graphically. The same timestep is given to both 
+solvers, but the ode15s-analog adaptively adds extra timesteps where the 
+rate-of-change is high.\label{fig:adaptive}}
+\end{figure}
+\begin{figure}[ht]
+ \includegraphics[width=\columnwidth]{code/hw1b-wils5_1.pdf}
+ \caption{Wilson, problem 5.1. simple Naka-Rushton neuron via Runge-Kutta 
+$\mathcal O(4)$ time-integration.
+Only the last 0.20 [s] of integration time is shown.
+Legend gives timestep in [ms].
+Analytical solution (not shown) for $P(t)=1$ (constant forcing) is $R(t) = 
+\frac{50}{13}(1 - e^{-50t})$
+\label{fig:wils}}
+\end{figure}
+\begin{figure}[ht]
+ \includegraphics[width=\columnwidth]{code/hw1b-5-forwardBackward.pdf}
+ \caption{Naka-Rushton neuron via forward and backward Euler-integration.
+Only the last 0.20 [s] of integration time is shown.
+Legend gives timestep in [ms]. All but the largest of the timesteps seem to be 
+in the domain of stability for backwards Euler for this problem.
+\label{fig:fb}}
+\end{figure}
+\begin{figure}[ht]
+ \includegraphics[width=\columnwidth]{code/hw1b-5-error.pdf}
+ \caption{Growth of RK4 error as stepsize $h$ increases. Error is measured as 
+the $L_2$ norm of the difference between the solution for $h=10^{-5}$ [s] 
+(assumed to be the ``true'' solution) and a linear interpolant of the 
+solution $R(t)$ for the given value of $h$. In contrast to the theoretical 
+prediction of $r\sim\mathcal O(4)$, I regressed an exponent better than 2 for 
+this problem (below the limiting $h$ value where RK4 diverged). This is 
+consistent, I think with the $\mathcal O(4)$ estimate being an upper bound on 
+the error.
+\label{fig:fb}}
+\end{figure}
+\newpage
+
+\inputminted[]{python}{code/hw1bWilsonC5p1.py}
+
+\newpage
+\section{Problem 6: Numerical experiments on a nonliner ODE}
+\begin{figure}[ht]
+ \includegraphics[width=\columnwidth]{code/hw1bp6-flows.pdf}
+ \caption{Partial phase portraits for a Fitzhugh-Nagumo neuron for several 
+values of the applied-current parameter $I_\mathrm{app}$. Green points are 
+initial conditions; red are final (after 10 [s] of integration). As also 
+happens in the Hodgkin-Huxley neuron, there is a lower and an upper steady 
+state, separated from a stable limit cycle by a pair of Hopf bifurcations. For 
+$I_\mathrm{app}=0$, the fixed point is at $v=\frac{-3}{2}$, $r=\frac{-3}{8}$.
+\label{fig:fb}}
+\end{figure}
+
+\inputminted[]{python}{code/hw1bp6.py}
+
+\newpage
+\section{Integrators.py}
+\inputminted[]{python}{code/Integrators.py}
+
+
+
+% \begin{marginfigure}
+% \centering
+% \begin{python}
+% import kevrekidis as kv
+% import numpy as np
+% f, a = kv.fa()
+% X = np.random.normal(size=(100,))
+% Y = np.random.normal(size=(100,))
+% a.scatter(X, Y)
+% fname = 'hw1b-scatter.pdf'
+% f.savefig(fname)
+% print '\includegraphics[width=1.0\\columnwidth]{%s}' % fname
+% # kv.plotting.show()
+% \end{python}
+% \caption{100 points binormal
+% \label{fig:1}}
+% \end{marginfigure}
+
+
+\end{document}
