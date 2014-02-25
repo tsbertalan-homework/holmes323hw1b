@@ -44,7 +44,7 @@ Analytical solution (not shown) for $P(t)=1$ (constant forcing) is $R(t) =
 Only the last 0.20 [s] of integration time is shown.
 Legend gives timestep in [ms]. All but the largest of the timesteps seem to be 
 in the domain of stability for backwards Euler for this problem.
-\label{fig:fb}}
+\label{fig:fb}}a
 \end{figure}
 \begin{figure}[ht]
  \includegraphics[width=\columnwidth]{code/hw1b-5-error.pdf}
@@ -52,7 +52,7 @@ in the domain of stability for backwards Euler for this problem.
 the $L_2$ norm of the difference between the solution for $h=10^{-5}$ [s] 
 (assumed to be the ``true'' solution) and a linear interpolant of the 
 solution $R(t)$ for the given value of $h$. In contrast to the theoretical 
-prediction of $r\sim\mathcal O(4)$, I regressed an exponent better than 2 for 
+prediction of $r\sim\mathcal O(h^4)$, I regressed an exponent better than 2 for 
 this problem (below the limiting $h$ value where RK4 diverged). This is 
 consistent, I think with the $\mathcal O(4)$ estimate being an upper bound on 
 the error.

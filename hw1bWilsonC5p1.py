@@ -96,16 +96,16 @@ def minimizeThis(MB):
     m = MB[0]
     b = MB[1]
     #l10(err)0 = m * l10(h) + b
-    return np.linalg.norm(m * np.log(hsErr) + b - np.log(np.asarray(errs)))
+    return np.linalg.norm(m * np.log10(hsErr) + b - np.log10(np.asarray(errs)))
 MB = minimize(minimizeThis, np.array([4,.001])).x
 xlim = errAx.get_xlim()
 ylim = errAx.get_ylim()
 m, b = tuple(MB)
-errAx.plot(hsErr, np.exp(b)*hsErr**m)
+errAx.plot(hsErr, 10**(b)*hsErr**m)
 logging.info('m=%f, b=%f' % (m, b))
 errAx.set_title(
                 r'$y\approx%.2fx+%.2f$' % (m, b) + '\n' +
-                r'$r\approx e^{%.2f}h^{%.2f}$' % (b, m)
+                r'$r\approx 10^{%.2f}h^{%.2f}$' % (b, m)
                 )
 
 showTime = 0.20  # We're not going to plot the whole thing.
@@ -148,7 +148,7 @@ ax2backward.legend(loc='right')
 fbFig.subplots_adjust(bottom=.14, top=.9, left=.1, right=.99, wspace=.05)
 tstepFig.subplots_adjust(bottom=.18, top=.99, left=.08, right=.99)
 adapFig.subplots_adjust(bottom=.18, top=.99, left=.08, right=.99)
-errFig.subplots_adjust(top=.9)
+errFig.subplots_adjust(top=.8, bottom=.18)
 
 # Save them.
 tstepFig.savefig('hw1b-wils5_1.pdf')
@@ -159,5 +159,5 @@ errFig.savefig('hw1b-5-error.pdf')
 # The analytical solution for P=1 is
 #  R(t) = \frac{50}{13}(1 - e^{-50t})
 
-# plt.show()
+plt.show()
 # from os import system; system('/usr/bin/notify-send done')
